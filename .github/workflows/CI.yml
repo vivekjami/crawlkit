@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 jobs:
-    # ──────────────────────────────────────────────────────────────
+  # ──────────────────────────────────────────────────────────────
   # Fast test + lint job (runs on every PR/push)
   # ──────────────────────────────────────────────────────────────
   test:
@@ -37,15 +37,11 @@ jobs:
         with:
           python-version: "3.11"
 
-      # ←←← THIS IS THE NEW PART THAT FIXES THE ERROR
-      - name: Setup virtual environment for maturin
-        run: |
-          python -m venv .venv
-          echo "VIRTUAL_ENV=$GITHUB_WORKSPACE/.venv" >> $GITHUB_ENV
-          echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
 
-      - name: Install Python tools
-        run: pip install maturin pytest mypy ruff
+      - name: Install dependencies
+        run: uv sync --group dev
 
       - name: Rust fmt check
         run: cargo fmt --check
@@ -54,16 +50,16 @@ jobs:
         run: cargo clippy -- -D warnings
 
       - name: Build extension (dev mode)
-        run: maturin develop
+        run: uv run maturin develop
 
       - name: Python lint (ruff)
-        run: ruff check python/ tests/ benchmarks/
+        run: uv run ruff check python/ tests/ benchmarks/
 
       - name: Python type check (mypy)
-        run: mypy python/ --ignore-missing-imports
+        run: uv run mypy python/ --ignore-missing-imports
 
       - name: Run tests
-        run: pytest tests/ -v --tb=short
+        run: uv run pytest tests/ -v --tb=short
 
   # ──────────────────────────────────────────────────────────────
   # All the wheel building jobs (kept exactly as maturin generated)
