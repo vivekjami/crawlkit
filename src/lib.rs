@@ -115,6 +115,20 @@ fn token_comparison(html: &str, clean_text: &str) -> PyResult<(usize, usize, f64
     Ok(html_extract::token_comparison(html, clean_text))
 }
 
+#[pyfunction]
+fn batch_extract_clean_text(py: Python<'_>, htmls: Vec<String>) -> Vec<String> {
+    py.detach(|| crate::html_extract::batch_extract_clean_text(&htmls))
+}
+
+#[pyfunction]
+fn batch_token_comparison_pages(
+    py: Python<'_>,
+    pages: Vec<(String, String)>,
+) -> Vec<(usize, usize, f64)> {
+    let (htmls, cleans): (Vec<_>, Vec<_>) = pages.into_iter().unzip();
+    py.detach(|| crate::html_extract::batch_token_comparison(&htmls, &cleans))
+}
+
 // ---------------------------------------------------------------------------
 // module
 // ---------------------------------------------------------------------------
@@ -135,5 +149,7 @@ fn crawlkit_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     // html_extract
     m.add_function(wrap_pyfunction!(extract_clean_text, m)?)?;
     m.add_function(wrap_pyfunction!(token_comparison, m)?)?;
+    m.add_function(wrap_pyfunction!(batch_extract_clean_text, m)?)?;
+    m.add_function(wrap_pyfunction!(batch_token_comparison_pages, m)?)?;
     Ok(())
 }

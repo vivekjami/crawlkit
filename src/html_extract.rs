@@ -1,3 +1,4 @@
+use rayon::prelude::*;
 use scraper::{Html, Selector};
 
 // Elements that are reliably noise
@@ -88,4 +89,29 @@ pub fn token_comparison(html: &str, clean_text: &str) -> (usize, usize, f64) {
         0.0
     };
     (html_tokens, clean_tokens, reduction)
+}
+
+/// Batch version of extract_clean_text.
+/// Processes all pages in parallel via Rayon.
+/// Input: Vec of raw HTML strings.
+/// Output: Vec of clean text strings (same order).
+pub fn batch_extract_clean_text(htmls: &[String]) -> Vec<String> {
+    htmls
+        .par_iter()
+        .map(|html| extract_clean_text(html))
+        .collect()
+}
+
+/// Batch token estimation across many texts.
+/// Returns (html_tokens, clean_tokens, reduction_pct) for each pair.
+/// Takes parallel slices: htmls[i] and clean_texts[i] must correspond.
+pub fn batch_token_comparison(
+    htmls: &[String],
+    clean_texts: &[String],
+) -> Vec<(usize, usize, f64)> {
+    htmls
+        .par_iter()
+        .zip(clean_texts.par_iter())
+        .map(|(html, clean)| token_comparison(html, clean))
+        .collect()
 }

@@ -6,7 +6,9 @@ Rust-accelerated core operations via PyO3 + Rayon.
 
 from crawlkit.crawlkit_rs import (
     batch_chunk_documents,
+    batch_extract_clean_text,
     batch_fingerprint_pages,
+    batch_token_comparison_pages,
     # Chunking
     chunk_markdown,
     # Fingerprinting
@@ -32,6 +34,8 @@ __all__ = [
     "filter_uncrawled",
     "extract_clean_text",
     "token_comparison",
+    "batch_extract_clean_text",
+    "batch_token_comparison_pages",
 ]
 
 __version__ = "0.1.0"
