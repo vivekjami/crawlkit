@@ -90,3 +90,6 @@ __pycache__/
 .env
 .DS_Store
 *.swp
+# crawlkit runtime artifacts
+.crawl_checkpoint.json
+.crawl_state.json
