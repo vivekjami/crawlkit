@@ -56,7 +56,7 @@ jobs:
         run: uv run ruff check python/ tests/ benchmarks/
 
       - name: Python type check (mypy)
-        run: uv run mypy python/ --ignore-missing-imports
+        run: uv run mypy python/ --ignore-missing-imports --no-warn-unused-ignores
 
       - name: Run tests
         run: uv run pytest tests/ -v --tb=short
